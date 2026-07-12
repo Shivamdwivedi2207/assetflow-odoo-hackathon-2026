@@ -1,5 +1,5 @@
 # views/allocation_views.xml
-# Python layout mapping replacing Odoo's architectural XML structure
+#allocation of assets to employees or departments with strict conflict handling rules
 
 ALLOCATION_VIEWS = {
     "action": {
