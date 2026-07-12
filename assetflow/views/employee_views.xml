@@ -1,5 +1,5 @@
 # views/employee_views.xml
-# Python layout mapping replacing Odoo's architectural XML structure
+# Python layout mapping 
 
 EMPLOYEE_VIEWS = {
     "action": {
