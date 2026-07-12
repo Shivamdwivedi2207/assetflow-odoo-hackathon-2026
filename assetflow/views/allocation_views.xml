@@ -1,0 +1,53 @@
+# views/allocation_views.xml
+# Python layout mapping replacing Odoo's architectural XML structure
+
+ALLOCATION_VIEWS = {
+    "action": {
+        "id": "action_asset_allocation",
+        "name": "Asset Allocations",
+        "res_model": "Allocation",
+        "view_mode": ["tree", "form"],
+        "help": "Deploy corporate assets to employees or departments with strict conflict handling rules."
+    },
+    
+    "tree": {
+        "id": "view_allocation_tree",
+        "title": "Active Allocations Ledger",
+        "columns": [
+            {"field": "asset.asset_tag", "label": "Asset Tag"},
+            {"field": "asset.name", "label": "Asset Name"},
+            {"field": "employee.name", "label": "Assigned Employee"},
+            {"field": "department.name", "label": "Assigned Department"},
+            {"field": "allocation_date", "label": "Allocation Date"},
+            {"field": "expected_return_date", "label": "Expected Return Date"},
+            {"field": "is_active", "label": "Active Assignment Status", "type": "boolean"}
+        ]
+    },
+    
+    "form": {
+        "id": "view_allocation_form",
+        "title": "Asset Allocation Form",
+        "sections": [
+            {
+                "name": "Assignment Targets",
+                "fields": [
+                    {"field": "asset", "label": "Target Asset", "type": "many2one", "relation": "Asset", "required": True},
+                    {"field": "employee", "label": "Target Employee Holder", "type": "many2one", "relation": "Employee"},
+                    {"field": "department", "label": "Target Department Node", "type": "many2one", "relation": "Department"}
+                ]
+            },
+            {
+                "name": "Timeline Parameters",
+                "fields": [
+                    {"field": "allocation_date", "label": "Allocation Operational Start", "readonly": True},
+                    {"field": "expected_return_date", "label": "Expected Return Deadline Date", "type": "datetime"},
+                    {"field": "actual_return_date", "label": "Actual Return Check-in Timestamp", "readonly": True},
+                    {"field": "is_active", "label": "Assignment Execution State", "readonly": True}
+                ],
+                "buttons": [
+                    {"action": "complete_return", "label": "Trigger Asset Return Check-In", "class": "btn-success"}
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,61 @@
+# views/asset_views.xml
+# Python layout mapping replacing Odoo's architectural XML structure
+
+ASSET_VIEWS = {
+    "action": {
+        "id": "action_asset_directory",
+        "name": "Asset Master Registry",
+        "res_model": "Asset",
+        "view_mode": ["tree", "form", "kanban"],
+        "help": "Register and track corporate property across its functional lifecycle states."
+    },
+    
+    "tree": {
+        "id": "view_asset_tree",
+        "title": "All Assets Directory",
+        "columns": [
+            {"field": "asset_tag", "label": "Asset Tag"},
+            {"field": "name", "label": "Asset Name"},
+            {"field": "category.name", "label": "Category"},
+            {"field": "serial_number", "label": "Serial Number"},
+            {"field": "location", "label": "Physical Location"},
+            {"field": "status", "label": "Lifecycle State"},
+            {"field": "is_bookable", "label": "Shared Resource Status", "type": "boolean"}
+        ]
+    },
+    
+    "form": {
+        "id": "view_asset_form",
+        "title": "Asset Profile Card",
+        "sections": [
+            {
+                "name": "General Profile Information",
+                "fields": [
+                    {"field": "name", "label": "Asset Item Name", "required": True},
+                    {"field": "category", "label": "Asset Category Node", "type": "many2one", "relation": "AssetCategory", "required": True},
+                    {"field": "asset_tag", "label": "Auto-Generated Tag Sequence", "readonly": True},
+                    {"field": "serial_number", "label": "Manufacturer Serial Number"}
+                ]
+            },
+            {
+                "name": "Financial & Context Metadata",
+                "fields": [
+                    {"field": "acquisition_cost", "label": "Acquisition Cost ($)", "type": "float"},
+                    {"field": "location", "label": "Assigned Storage Location"},
+                    {"field": "is_bookable", "label": "Flag as Shared / Bookable Resource", "type": "boolean"},
+                    {"field": "status", "label": "Current State Profile", "readonly": True}
+                ],
+                "buttons": [
+                    {"action": "transit_to", "label": "Manually Force State Mutation", "class": "btn-warning", "admin_only": True}
+                ]
+            },
+            {
+                "name": "Asset History Subledgers",
+                "sub-tables": [
+                    {"name": "allocation_history", "label": "Historical Allocations Log"},
+                    {"name": "maintenance_history", "label": "Historical Repair Tickets Log"}
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,53 @@
+# views/maintenance_views.xml
+# Python layout mapping replacing Odoo's architectural XML structure
+
+MAINTENANCE_VIEWS = {
+    "action": {
+        "id": "action_maintenance_hub",
+        "name": "Maintenance Management",
+        "res_model": "Maintenance",
+        "view_mode": ["tree", "form"],
+        "help": "File issues, track asset breakdowns, and manage the approval-to-resolution repair pipeline."
+    },
+    
+    "tree": {
+        "id": "view_maintenance_tree",
+        "title": "Maintenance Tickets Registry",
+        "columns": [
+            {"field": "id", "label": "Job ID"},
+            {"field": "asset.asset_tag", "label": "Asset Tag"},
+            {"field": "asset.name", "label": "Asset Item"},
+            {"field": "priority", "label": "Priority Tier"},
+            {"field": "status", "label": "Work Status"},
+            {"field": "technician", "label": "Assigned Technician"}
+        ]
+    },
+    
+    "form": {
+        "id": "view_maintenance_form",
+        "title": "Maintenance Dispatch Ticket",
+        "sections": [
+            {
+                "name": "Issue Reporting Profile",
+                "fields": [
+                    {"field": "asset", "label": "Target Asset", "type": "many2one", "relation": "Asset", "required": True},
+                    {"field": "raised_by", "label": "Reported By", "type": "many2one", "relation": "Employee", "readonly": True},
+                    {"field": "description", "label": "Symptoms / Issue Description", "required": True},
+                    {"field": "priority", "label": "Priority Level", "type": "selection", "selection": ["Low", "Medium", "High", "Critical"]}
+                ]
+            },
+            {
+                "name": "Workflow Status & Logistics",
+                "fields": [
+                    {"field": "status", "label": "Ticket Progression State", "readonly": True},
+                    {"field": "technician", "label": "Dispatched Technician Name"}
+                ],
+                "buttons": [
+                    {"action": "approve_request", "label": "Approve Repair Ticket", "class": "btn-primary", "manager_only": True},
+                    {"action": "assign_technician", "label": "Deploy Technician", "class": "btn-secondary", "manager_only": True},
+                    {"action": "resolve_repairs", "label": "Mark Repairs Resolved", "class": "btn-success"}
+                ]
+            }
+        ]
+    }
+}

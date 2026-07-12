@@ -1,0 +1,43 @@
+# views/asset_category_views.xml
+# Python layout mapping replacing Odoo's architectural XML structure
+
+ASSET_CATEGORY_VIEWS = {
+    "action": {
+        "id": "action_management_asset_category",
+        "name": "Asset Categories",
+        "res_model": "AssetCategory",
+        "view_mode": ["tree", "form"],
+        "help": "Manage asset categories and establish dynamic metadata attributes per category type."
+    },
+    
+    "tree": {
+        "id": "view_asset_category_tree",
+        "title": "Asset Category Catalog",
+        "columns": [
+            {"field": "name", "label": "Category Name"},
+            {"field": "specific_attributes", "label": "Custom Field Mappings", "type": "dictionary"}
+        ]
+    },
+    
+    "form": {
+        "id": "view_asset_category_form",
+        "title": "Asset Category Configuration",
+        "sections": [
+            {
+                "name": "Core Category Profile",
+                "fields": [
+                    {"field": "name", "label": "Category Name", "required": True}
+                ]
+            },
+            {
+                "name": "Custom Dynamic Attributes Schema",
+                "fields": [
+                    {"field": "specific_attributes", "label": "Metadata Schema JSON/Dict", "type": "dictionary", "help": "Specify structural configurations like {'Warranty': 'Length', 'Fuel': 'Type'}."}
+                ],
+                "buttons": [
+                    {"action": "update_attributes", "label": "Commit Schema Alterations", "class": "btn-secondary"}
+                ]
+            }
+        ]
+    }
+}
