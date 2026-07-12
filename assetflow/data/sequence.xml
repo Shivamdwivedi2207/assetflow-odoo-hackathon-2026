@@ -1,0 +1,37 @@
+# data/sequence.xml
+# Pure-Python sequence generator configurations replacing Odoo sequence XML structure
+
+class SequenceEngine:
+    def __init__(self):
+        self._sequences = {
+            "asset.tag.seq": {
+                "prefix": "AF-",
+                "padding": 4,
+                "number_next": 1,
+                "step": 1
+            },
+            "maintenance.job.seq": {
+                "prefix": "JOB-",
+                "padding": 5,
+                "number_next": 1,
+                "step": 1
+            }
+        }
+
+    def get_next_number(self, sequence_code: str) -> str:
+        """Simulates Odoo's next_by_code() sequence function."""
+        if sequence_code not in self._sequences:
+            raise KeyError(f"Sequence code '{sequence_code}' not registered in system variables.")
+            
+        seq = self._sequences[sequence_code]
+        current_val = seq["number_next"]
+        
+        # Build padded identifier string (e.g., AF-0001)
+        formatted_number = f"{seq['prefix']}{current_val:0{seq['padding']}d}"
+        
+        # Increment token counter for next allocation turn
+        seq["number_next"] += seq["step"]
+        return formatted_number
+
+# Global runtime sequence engine instance
+GLOBAL_SEQUENCE_POOL = SequenceEngine()

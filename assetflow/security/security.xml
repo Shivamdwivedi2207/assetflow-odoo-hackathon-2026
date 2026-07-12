@@ -1,0 +1,71 @@
+# security/security.xml
+# Pure-Python Record Rules Engine replacing Odoo's row-level XML rules
+
+from models.employee import UserRole
+
+RECORD_RULES = {
+    "Asset": [
+        {
+            "name": "Employee: View Owned Assets Only",
+            "roles": [UserRole.EMPLOYEE],
+            "domain_filter": lambda asset, user: asset.current_holder == user or asset.is_bookable
+        },
+        {
+            "name": "Department Head: View Departmental Assets",
+            "roles": [UserRole.DEPARTMENT_HEAD],
+            "domain_filter": lambda asset, user: asset.current_department == user.department or asset.is_bookable
+        },
+        {
+            "name": "Asset Manager/Admin: Global Visibility",
+            "roles": [UserRole.ASSET_MANAGER, UserRole.ADMIN],
+            "domain_filter": lambda asset, user: True
+        }
+    ],
+    
+    "Allocation": [
+        {
+            "name": "Employee: Own Allocation View",
+            "roles": [UserRole.EMPLOYEE],
+            "domain_filter": lambda allocation, user: allocation.employee == user
+        },
+        {
+            "name": "Department Head: Departmental Allocations View",
+            "roles": [UserRole.DEPARTMENT_HEAD],
+            "domain_filter": lambda allocation, user: allocation.department == user.department or (allocation.employee and allocation.employee.department == user.department)
+        },
+        {
+            "name": "Global Access for Asset Personnel",
+            "roles": [UserRole.ASSET_MANAGER, UserRole.ADMIN],
+            "domain_filter": lambda allocation, user: True
+        }
+    ],
+    
+    "Maintenance": [
+        {
+            "name": "Employee: View Self-Raised Requests",
+            "roles": [UserRole.EMPLOYEE],
+            "domain_filter": lambda maintenance, user: maintenance.raised_by == user
+        },
+        {
+            "name": "Global Access for Asset Personnel",
+            "roles": [UserRole.DEPARTMENT_HEAD, UserRole.ASSET_MANAGER, UserRole.ADMIN],
+            "domain_filter": lambda maintenance, user: True
+        }
+    ]
+}
+
+def check_record_rule(model_name: str, record, user) -> bool:
+    """Evaluates row-level access rules against a specific record instance."""
+    if model_name not in RECORD_RULES:
+        return True # Default to True if no record rules are defined for the model
+        
+    rules_applied = False
+    for rule in RECORD_RULES[model_name]:
+        if user.role in rule["roles"]:
+            rules_applied = True
+            # If any matching rule allows access, evaluate the lambda domain filter
+            if rule["domain_filter"](record, user):
+                return True
+                
+    # If rules exist for this role but none matched true, deny row access
+    return not rules_applied

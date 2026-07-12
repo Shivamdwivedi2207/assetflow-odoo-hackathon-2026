@@ -1,0 +1,59 @@
+# security/ir.model.access.csv
+# Pure-Python Access Control List (ACL) dictionary mapping
+
+from models.employee import UserRole
+
+MODEL_ACCESS_CONTROL = {
+    # Format: "ModelName": { Role: (Read, Write, Create, Delete) }
+    "Department": {
+        UserRole.ADMIN:           (True, True, True, True),
+        UserRole.ASSET_MANAGER:   (True, True, False, False),
+        UserRole.DEPARTMENT_HEAD: (True, False, False, False),
+        UserRole.EMPLOYEE:        (True, False, False, False),
+    },
+    "Employee": {
+        UserRole.ADMIN:           (True, True, True, True),
+        UserRole.ASSET_MANAGER:   (True, True, True, False),
+        UserRole.DEPARTMENT_HEAD: (True, False, False, False),
+        UserRole.EMPLOYEE:        (True, False, False, False),
+    },
+    "AssetCategory": {
+        UserRole.ADMIN:           (True, True, True, True),
+        UserRole.ASSET_MANAGER:   (True, True, True, True),
+        UserRole.DEPARTMENT_HEAD: (True, False, False, False),
+        UserRole.EMPLOYEE:        (True, False, False, False),
+    },
+    "Asset": {
+        UserRole.ADMIN:           (True, True, True, True),
+        UserRole.ASSET_MANAGER:   (True, True, True, True),
+        UserRole.DEPARTMENT_HEAD: (True, False, False, False),
+        UserRole.EMPLOYEE:        (True, False, False, False),
+    },
+    "Allocation": {
+        UserRole.ADMIN:           (True, True, True, True),
+        UserRole.ASSET_MANAGER:   (True, True, True, True),
+        UserRole.DEPARTMENT_HEAD: (True, True, True, False), # Can manage within dept
+        UserRole.EMPLOYEE:        (True, False, True, False), # Can request allocations
+    },
+    "Maintenance": {
+        UserRole.ADMIN:           (True, True, True, True),
+        UserRole.ASSET_MANAGER:   (True, True, True, True),
+        UserRole.DEPARTMENT_HEAD: (True, True, True, False),
+        UserRole.EMPLOYEE:        (True, False, True, False), # Can raise tickets
+    }
+}
+
+def check_model_access(model_name: str, role: str, operation: str) -> bool:
+    """Evaluates if a user role has permissions for a specific operation.
+    
+    Operations: 'read', 'write', 'create', 'delete'
+    """
+    if model_name not in MODEL_ACCESS_CONTROL:
+        return False
+    if role not in MODEL_ACCESS_CONTROL[model_name]:
+        return False
+        
+    perms = MODEL_ACCESS_CONTROL[model_name][role]
+    op_map = {'read': 0, 'write': 1, 'create': 2, 'delete': 3}
+    
+    return perms[op_map[operation]]
