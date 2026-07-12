@@ -1,0 +1,49 @@
+# views/employee_views.xml
+# Python layout mapping replacing Odoo's architectural XML structure
+
+EMPLOYEE_VIEWS = {
+    "action": {
+        "id": "action_management_employee",
+        "name": "Employee Directory",
+        "res_model": "Employee",
+        "view_mode": ["tree", "form"],
+        "help": "Track employee details, department assignments, and system-wide security roles."
+    },
+    
+    "tree": {
+        "id": "view_employee_tree",
+        "title": "Employee Master Directory",
+        "columns": [
+            {"field": "name", "label": "Full Name"},
+            {"field": "email", "label": "Email Address"},
+            {"field": "department.name", "label": "Assigned Department"},
+            {"field": "role", "label": "Security Role Status"},
+            {"field": "is_active", "label": "Status", "type": "boolean"}
+        ]
+    },
+    
+    "form": {
+        "id": "view_employee_form",
+        "title": "Employee Profile Sheet",
+        "sections": [
+            {
+                "name": "Identity Credentials",
+                "fields": [
+                    {"field": "name", "label": "Full Name", "required": True},
+                    {"field": "email", "label": "Corporate Email Address", "required": True},
+                    {"field": "password", "label": "Access Security Key", "required": True, "password": True}
+                ]
+            },
+            {
+                "name": "Organizational Alignment & Authorization",
+                "fields": [
+                    {"field": "department", "label": "Department Node", "type": "many2one", "relation": "Department"},
+                    {"field": "role", "label": "Security Role Clearance", "type": "selection", "selection": ["Employee", "Department Head", "Asset Manager", "Admin"], "readonly": True}
+                ],
+                "buttons": [
+                    {"action": "change_role", "label": "Elevate/Modify Role Permissions", "class": "btn-primary", "admin_only": True}
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,75 @@
+# views/menu.xml
+# Python layout mapping replacing Odoo's architectural XML menu structure
+
+SYS_MENU_CONFIG = {
+    "root": {
+        "id": "menu_assetflow_root",
+        "name": "AssetFlow ERP",
+        "icon": "fa-cubes"
+    },
+    
+    "sub_menus": [
+        {
+            "id": "menu_dashboard",
+            "name": "Dashboard",
+            "parent_id": "menu_assetflow_root",
+            "sequence": 10,
+            "action": "action_dashboard_view"
+        },
+        {
+            "id": "menu_assets_parent",
+            "name": "Assets & Allocations",
+            "parent_id": "menu_assetflow_root",
+            "sequence": 20,
+            "children": [
+                {
+                    "id": "menu_asset_registry",
+                    "name": "Asset Registry",
+                    "action": "action_asset_directory"
+                },
+                {
+                    "id": "menu_asset_allocation",
+                    "name": "Deployments / Transfers",
+                    "action": "action_asset_allocation"
+                }
+            ]
+        },
+        {
+            "id": "menu_operations_parent",
+            "name": "Operations Center",
+            "parent_id": "menu_assetflow_root",
+            "sequence": 30,
+            "children": [
+                {
+                    "id": "menu_maintenance_hub",
+                    "name": "Maintenance & Repairs",
+                    "action": "action_maintenance_hub"
+                }
+            ]
+        },
+        {
+            "id": "menu_configuration_parent",
+            "name": "Configuration Setup",
+            "parent_id": "menu_assetflow_root",
+            "sequence": 40,
+            "admin_only": True,
+            "children": [
+                {
+                    "id": "menu_dept_management",
+                    "name": "Departments Directory",
+                    "action": "action_management_department"
+                },
+                {
+                    "id": "menu_emp_management",
+                    "name": "Employee Master Directory",
+                    "action": "action_management_employee"
+                },
+                {
+                    "id": "menu_category_management",
+                    "name": "Asset Categories",
+                    "action": "action_management_asset_category"
+                }
+            ]
+        }
+    ]
+}
