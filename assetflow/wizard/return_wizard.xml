@@ -1,0 +1,28 @@
+# wizard/return_wizard.xml
+# Python layout mapping replacing Odoo's architectural XML wizard views
+
+RETURN_WIZARD_VIEW = {
+    "id": "view_return_wizard_form",
+    "title": "Asset Return Check-In Inspection",
+    "target": "new",  # Renders as a transient dialog popup overlay
+    "sections": [
+        {
+            "name": "Condition Inspection Check",
+            "fields": [
+                {"field": "asset.asset_tag", "label": "Returning Asset Tag", "readonly": True},
+                {"field": "active_allocation.allocation_date", "label": "Issued Date", "readonly": True},
+                {"field": "checkin_notes", "label": "Condition Inspection Notes", "type": "text", "required": True}
+            ]
+        },
+        {
+            "name": "Discrepancy Flags",
+            "fields": [
+                {"field": "is_damaged", "label": "Flag Asset as Damaged / Broken", "type": "boolean", "default": False}
+            ],
+            "buttons": [
+                {"action": "execute_return", "label": "Complete Intake Settle", "class": "btn-success"},
+                {"action": "cancel", "label": "Cancel", "class": "btn-default", "special": "cancel"}
+            ]
+        }
+    ]
+}

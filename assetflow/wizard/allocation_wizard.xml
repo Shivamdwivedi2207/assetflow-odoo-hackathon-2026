@@ -1,0 +1,28 @@
+# wizard/allocation_wizard.xml
+# Python layout mapping replacing Odoo's architectural XML wizard views
+
+ALLOCATION_WIZARD_VIEW = {
+    "id": "view_allocation_wizard_form",
+    "title": "Quick Asset Allocation",
+    "target": "new",  # Renders as a transient dialog popup overlay
+    "sections": [
+        {
+            "name": "Allocation Parameters",
+            "fields": [
+                {"field": "asset.asset_tag", "label": "Selected Asset", "readonly": True},
+                {"field": "target_employee_id", "label": "Assign to Employee", "type": "many2one", "relation": "Employee"},
+                {"field": "target_department_id", "label": "Assign to Department", "type": "many2one", "relation": "Department"}
+            ]
+        },
+        {
+            "name": "Duration Configuration",
+            "fields": [
+                {"field": "duration_days", "label": "Allocation Period (Days)", "type": "integer", "default": 7, "required": True}
+            ],
+            "buttons": [
+                {"action": "execute_allocation", "label": "Confirm Allocation", "class": "btn-primary"},
+                {"action": "cancel", "label": "Cancel", "class": "btn-default", "special": "cancel"}
+            ]
+        }
+    ]
+}
