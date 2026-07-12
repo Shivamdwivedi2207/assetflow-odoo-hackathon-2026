@@ -6,13 +6,15 @@ from .asset import AssetStatus
 
 class Allocation:
     def __init__(self, asset, employee=None, department=None, expected_return_date=None):
-        if not employee and not department:
-            raise ValueError("Allocation assignment target missing: Must specify an Employee or Department.")
+        if bool(employee) == bool(department):
+            raise ValueError("Allocation requires exactly one assignment target: an Employee or a Department.")
         
         # Conflict Validation: Prevent double-allocations
-        if asset.status == AssetStatus.ALLOCATED:
-            holder_name = asset.current_holder.name if asset.current_holder else asset.current_department.name
-            raise RuntimeError(f"Conflict Resolution: Asset '{asset.asset_tag}' is already allocated to {holder_name}.")
+        if asset.status != AssetStatus.AVAILABLE:
+            if asset.status == AssetStatus.ALLOCATED:
+                holder_name = asset.current_holder.name if asset.current_holder else asset.current_department.name
+                raise RuntimeError(f"Conflict Resolution: Asset '{asset.asset_tag}' is already allocated to {holder_name}.")
+            raise RuntimeError(f"Asset '{asset.asset_tag}' is not available for allocation (current status: {asset.status}).")
             
         self.id = str(uuid.uuid4())[:8]
         self.asset = asset
@@ -38,6 +40,7 @@ class Allocation:
         
         # Self-register into the global database registry
         GLOBAL_DB.allocations[self.id] = self
+        GLOBAL_DB.log_activity(f"Created allocation {self.id} for asset {asset.asset_tag}.")
 
     def complete_return(self, checkin_notes: str):
         """Processes the returning pipeline asset check-in sequence."""

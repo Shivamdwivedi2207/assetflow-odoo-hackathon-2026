@@ -19,6 +19,11 @@ class AllocationWizard:
         """Executes the operational allocation loop using the transient fields."""
         employee = GLOBAL_DB.employees.get(self.target_employee_id) if self.target_employee_id else None
         department = GLOBAL_DB.departments.get(self.target_department_id) if self.target_department_id else None
+
+        if self.target_employee_id and not employee:
+            raise ValueError("Selected employee does not exist.")
+        if self.target_department_id and not department:
+            raise ValueError("Selected department does not exist.")
         
         expected_return = datetime.now() + timedelta(days=int(self.duration_days))
         

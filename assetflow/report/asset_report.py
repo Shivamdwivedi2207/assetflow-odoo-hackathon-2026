@@ -1,0 +1,60 @@
+from models._registry import GLOBAL_DB
+from models.asset import AssetStatus
+
+
+class AssetReportGenerator:
+    @staticmethod
+    def compile_operational_metrics() -> dict:
+        assets = list(GLOBAL_DB.assets.values())
+        total_assets = len(assets)
+        allocated_count = sum(1 for a in assets if a.status == AssetStatus.ALLOCATED)
+        maint_count = sum(1 for a in assets if a.status == AssetStatus.UNDER_MAINTENANCE)
+
+        utilization_rate = (allocated_count / total_assets * 100) if total_assets > 0 else 0.0
+
+        category_summary = {}
+        for a in assets:
+            cat_name = a.category.name
+            category_summary[cat_name] = category_summary.get(cat_name, 0) + 1
+
+        maintenance_frequency = {}
+        for m in GLOBAL_DB.maintenance_records.values():
+            tag = m.asset.asset_tag
+            maintenance_frequency[tag] = maintenance_frequency.get(tag, 0) + 1
+
+        return {
+            "total_count": total_assets,
+            "utilization_rate": utilization_rate,
+            "maintenance_active": maint_count,
+            "category_summary": category_summary,
+            "maintenance_frequency": maintenance_frequency,
+        }
+
+    @staticmethod
+    def generate_text_report() -> str:
+        data = AssetReportGenerator.compile_operational_metrics()
+        report_lines = [
+            "============================================================",
+            "                 ASSETFLOW ERP SYSTEM REPORT                ",
+            "============================================================",
+            f" Total Managed Corporate Assets : {data['total_count']}",
+            f" Real-time Asset Utilization Rate: {data['utilization_rate']:.2f}%",
+            f" Assets actively out for Repair  : {data['maintenance_active']}",
+            "------------------------------------------------------------",
+            " DISTRIBUTION SUMMARY BY CATEGORY:",
+        ]
+
+        for cat, count in data["category_summary"].items():
+            report_lines.append(f"  * {cat}: {count} items")
+
+        report_lines.append("------------------------------------------------------------")
+        report_lines.append(" MAINTENANCE FREQUENCY BREAKDOWN BY HARDWARE TAG:")
+
+        if not data["maintenance_frequency"]:
+            report_lines.append("  No historical tracking issues recorded on file.")
+        else:
+            for tag, frequency in data["maintenance_frequency"].items():
+                report_lines.append(f"  * Asset {tag}: {frequency} repair tickets registered")
+
+        report_lines.append("============================================================")
+        return "\n".join(report_lines)
